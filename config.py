@@ -12,7 +12,7 @@ class Config:
     
     # Application settings
     APP_NAME = 'ACEest Fitness & Gym'
-    APP_VERSION = '1.2'
+    APP_VERSION = '1.3'
     
     # Flask settings
     JSON_SORT_KEYS = False

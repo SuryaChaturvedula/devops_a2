@@ -1,10 +1,11 @@
 """
 Routes for ACEest Fitness & Gym application
-Version: 1.2 - Added charts and analytics
+Version: 1.3 - Full features with user profiles and health calculations
 Handles both Web UI and REST API endpoints
 """
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from app.models import workout_session, Workout
+from app.profile import user_profile
 
 main_bp = Blueprint('main', __name__)
 
@@ -97,6 +98,31 @@ def add_workout_form():
     flash(f'✅ Added {exercise} ({duration} min) to {category}!', 'success')
     
     return redirect(url_for('main.workouts'))
+
+
+@main_bp.route('/profile')
+def profile():
+    """User profile page"""
+    return render_template('profile.html', profile=user_profile)
+
+
+@main_bp.route('/update_profile', methods=['POST'])
+def update_profile():
+    """Update user profile"""
+    user_profile.name = request.form.get('name', '').strip()
+    user_profile.reg_id = request.form.get('reg_id', '').strip()
+    
+    try:
+        user_profile.height = float(request.form.get('height', 0))
+        user_profile.weight = float(request.form.get('weight', 0))
+        user_profile.age = int(request.form.get('age', 0))
+        user_profile.gender = request.form.get('gender', '')
+        
+        flash('✅ Profile updated successfully!', 'success')
+    except ValueError:
+        flash('⚠️ Please enter valid numeric values!', 'error')
+    
+    return redirect(url_for('main.profile'))
 
 
 # ==================== REST API ROUTES ====================

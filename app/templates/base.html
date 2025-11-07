@@ -44,8 +44,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'main.profile' %}active{% endif %}" href="{{ url_for('main.profile') }}">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/health" target="_blank">
-                            <i class="bi bi-heart"></i> Health Check
+                            <i class="bi bi-heart"></i> Health
                         </a>
                     </li>
                 </ul>
@@ -79,7 +84,7 @@
                 <i class="bi bi-heart-fill text-danger"></i> 
                 ACEest Fitness & Gym © 2025 | DevOps CI/CD Assignment
             </p>
-            <small class="text-muted">Version 1.2 - Charts & Analytics | Built with Flask & Bootstrap</small>
+            <small class="text-muted">Version 1.3 - Full Features | Built with Flask & Bootstrap</small>
         </div>
     </footer>
 
