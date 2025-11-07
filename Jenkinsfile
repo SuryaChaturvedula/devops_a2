@@ -18,7 +18,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo '📥 Checking out code from Git...'
+                echo 'Checking out code from Git...'
                 checkout scm
                 script {
                     // Get version from git tag or commit
@@ -30,7 +30,7 @@ pipeline {
         
         stage('Setup Python Environment') {
             steps {
-                echo '🐍 Setting up Python environment...'
+                echo 'Setting up Python environment...'
                 sh '''
                     python3 --version
                     pip3 --version
@@ -40,7 +40,7 @@ pipeline {
         
         stage('Install Dependencies') {
             steps {
-                echo '📦 Installing Python dependencies...'
+                echo 'Installing Python dependencies...'
                 sh '''
                     pip3 install --break-system-packages -r requirements.txt
                 '''
@@ -49,7 +49,7 @@ pipeline {
         
         stage('Lint Code') {
             steps {
-                echo '🔍 Running code linting...'
+                echo 'Running code linting...'
                 sh '''
                     pip3 install --break-system-packages flake8 pylint
                     echo "Running flake8..."
@@ -62,7 +62,7 @@ pipeline {
         
         stage('Run Unit Tests') {
             steps {
-                echo '🧪 Running unit tests with Pytest...'
+                echo 'Running unit tests with Pytest...'
                 sh '''
                     pytest -v --cov=app --cov-report=xml --cov-report=html --cov-report=term
                 '''
@@ -85,10 +85,10 @@ pipeline {
             }
         }
         
-        // Temporarily disabled - takes 24 minutes, we know it works!
+        // Temporarily disabled - takes 24 minutes, quality gate already passed
         // stage('Code Quality Analysis') {
         //     steps {
-        //         echo '📊 Running SonarQube analysis...'
+        //         echo 'Running SonarQube analysis...'
         //         script {
         //             // SonarQube Scanner
         //             withSonarQubeEnv('SonarQube') {
@@ -109,17 +109,17 @@ pipeline {
         
         // stage('Quality Gate') {
         //     steps {
-        //         echo '🚦 Checking SonarQube Quality Gate...'
+        //         echo 'Checking SonarQube Quality Gate...'
         //         timeout(time: 5, unit: 'MINUTES') {
         //             // Don't abort pipeline on first run - just warn
         //             script {
         //                 def qg = waitForQualityGate()
         //                 if (qg.status != 'OK') {
-        //                     echo "⚠️ Quality Gate failed: ${qg.status}"
+        //                     echo "Quality Gate failed: ${qg.status}"
         //                     // Don't fail the build yet - just show warning
         //                     // Change to 'error' later to enforce quality gates
         //                 } else {
-        //                     echo "✅ Quality Gate passed!"
+        //                     echo "Quality Gate passed!"
         //                 }
         //             }
         //         }
@@ -128,7 +128,7 @@ pipeline {
         
         stage('Build Docker Image') {
             steps {
-                echo '🐳 Building Docker image...'
+                echo 'Building Docker image...'
                 script {
                     // Build Docker image with version tag
                     sh """
@@ -141,13 +141,13 @@ pipeline {
         
         stage('Test Docker Image') {
             steps {
-                echo '🧪 Testing Docker image...'
+                echo 'Testing Docker image...'
                 sh """
                     echo "Starting container for testing..."
                     docker run -d --name test-container-\${BUILD_NUMBER} -p 5001:5000 ${DOCKER_IMAGE}:\${GIT_TAG}
                     sleep 10
                     echo "Testing health endpoint..."
-                    docker exec test-container-\${BUILD_NUMBER} python3 -c "import urllib.request; response = urllib.request.urlopen('http://localhost:5000/health'); assert response.status == 200; print('✅ Health check passed!')"
+                    docker exec test-container-\${BUILD_NUMBER} python3 -c "import urllib.request; response = urllib.request.urlopen('http://localhost:5000/health'); assert response.status == 200; print('Health check passed!')"
                     echo "Stopping test container..."
                     docker stop test-container-\${BUILD_NUMBER}
                     docker rm test-container-\${BUILD_NUMBER}
@@ -157,7 +157,7 @@ pipeline {
         
         stage('Push to Docker Hub') {
             steps {
-                echo '📤 Pushing Docker image to Docker Hub...'
+                echo 'Pushing Docker image to Docker Hub...'
                 script {
                     docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
                         sh """
@@ -175,7 +175,7 @@ pipeline {
         //         branch 'main'
         //     }
         //     steps {
-        //         echo '☸️ Deploying to Kubernetes...'
+        //         echo 'Deploying to Kubernetes...'
         //         sh '''
         //             kubectl set image deployment/aceest-fitness-deployment \
         //                 aceest-fitness=${DOCKER_IMAGE}:${GIT_TAG} \
@@ -191,7 +191,7 @@ pipeline {
         //         branch 'main'
         //     }
         //     steps {
-        //         echo '✅ Running post-deployment tests...'
+        //         echo 'Running post-deployment tests...'
         //         sh '''
         //             # Get the service URL
         //             SERVICE_URL=$(kubectl get service aceest-fitness-service \
@@ -211,18 +211,18 @@ pipeline {
     
     post {
         always {
-            echo '🧹 Cleaning up...'
+            echo 'Cleaning up...'
             sh '''
                 # Clean up any test containers
                 docker ps -aq -f name=test-container | xargs -r docker rm -f || true
             '''
         }
         success {
-            echo '✅ Pipeline completed successfully!'
+            echo 'Pipeline completed successfully!'
             echo "Version ${env.GIT_TAG} built and tested successfully"
         }
         failure {
-            echo '❌ Pipeline failed!'
+            echo 'Pipeline failed!'
             echo "Build failed for version ${env.GIT_TAG}"
         }
     }

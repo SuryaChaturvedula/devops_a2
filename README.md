@@ -1,8 +1,8 @@
-# ACEest Fitness & Gym 🏋️
+# ACEest Fitness & Gym
 
 A modern Flask web application for tracking fitness and gym workouts with a complete CI/CD pipeline.
 
-## 🎯 Features
+## Features
 
 - **Workout Tracking**: Log exercises with duration and category (Warm-up, Workout, Cool-down)
 - **Real-time Statistics**: View workout analytics and progress
@@ -10,7 +10,7 @@ A modern Flask web application for tracking fitness and gym workouts with a comp
 - **Responsive UI**: Beautiful Bootstrap-based web interface
 - **Health Check**: Built-in health monitoring endpoint
 
-## 📋 Version 1.0
+## Version 1.0
 
 **Current Features:**
 - Basic workout logging
@@ -19,7 +19,7 @@ A modern Flask web application for tracking fitness and gym workouts with a comp
 - REST API endpoints
 - Web UI with Bootstrap
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -64,7 +64,7 @@ A modern Flask web application for tracking fitness and gym workouts with a comp
    http://localhost:5000
    ```
 
-## 📚 API Documentation
+## API Documentation
 
 ### Endpoints
 
@@ -95,7 +95,7 @@ curl http://localhost:5000/api/workouts
 curl http://localhost:5000/api/workouts/stats
 ```
 
-## 🧪 Testing
+## Testing
 
 Run the test suite:
 ```bash
@@ -107,7 +107,7 @@ Run with coverage:
 pytest --cov=app --cov-report=html
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Solution/
@@ -132,7 +132,7 @@ Solution/
 └── README.md               # This file
 ```
 
-## 🐳 Docker
+## Docker
 
 Build the image:
 ```bash
@@ -144,16 +144,16 @@ Run the container:
 docker run -p 5000:5000 aceest-fitness:v1.0
 ```
 
-## 🔄 CI/CD Pipeline
+## CI/CD Pipeline
 
 This project includes a complete CI/CD pipeline with:
-- ✅ Jenkins for continuous integration
-- ✅ Pytest for automated testing
-- ✅ SonarQube for code quality
-- ✅ Docker for containerization
-- ✅ Kubernetes for orchestration
+- Jenkins for continuous integration
+- Pytest for automated testing
+- SonarQube for code quality
+- Docker for containerization
+- Kubernetes for orchestration
 
-## 📝 Development
+## Development
 
 ### Running in Development Mode
 
@@ -174,7 +174,7 @@ Lint with Flake8:
 flake8 app/
 ```
 
-## 🚢 Deployment Strategies
+## Deployment Strategies
 
 The application supports multiple Kubernetes deployment strategies:
 - Blue-Green Deployment
@@ -183,15 +183,15 @@ The application supports multiple Kubernetes deployment strategies:
 - A/B Testing
 - Shadow Deployment
 
-## 📄 License
+## License
 
 Educational project for DevOps CI/CD assignment.
 
-## 👨‍💻 Author
+## Author
 
 DevOps Assignment - ACEest Fitness & Gym
 
-## 🔗 Links
+## Links
 
 - GitHub Repository: [Link]
 - Docker Hub: [Link]
