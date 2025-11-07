@@ -16,7 +16,7 @@ if __name__ == '__main__':
     print("=" * 60)
     print(f"🚀 Starting server on http://localhost:{port}")
     print(f"🔧 Debug mode: {debug}")
-    print(f"📝 Version: 1.0")
+    print(f"📝 Version: 1.1 - Enhanced Session Tracking")
     print("=" * 60)
     
     app.run(host='0.0.0.0', port=port, debug=debug)

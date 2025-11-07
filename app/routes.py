@@ -1,5 +1,6 @@
 """
 Routes for ACEest Fitness & Gym application
+Version: 1.1 - Enhanced with session tracking
 Handles both Web UI and REST API endpoints
 """
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
@@ -140,6 +141,31 @@ def api_get_stats():
     }
     
     return jsonify({'success': True, 'stats': stats}), 200
+
+
+@main_bp.route('/api/workouts/sessions', methods=['GET'])
+def api_get_sessions():
+    """Get session summary (API)"""
+    summary = workout_session.get_session_summary()
+    
+    return jsonify({
+        'success': True,
+        'sessions': summary,
+        'total_sessions': len(summary)
+    }), 200
+
+
+@main_bp.route('/api/workouts/recent', methods=['GET'])
+def api_get_recent():
+    """Get recent workouts (API)"""
+    limit = request.args.get('limit', 10, type=int)
+    recent = workout_session.get_recent_workouts(limit)
+    
+    return jsonify({
+        'success': True,
+        'workouts': [w.to_dict() for w in recent],
+        'count': len(recent)
+    }), 200
 
 
 @main_bp.route('/api/workouts/clear', methods=['DELETE'])

@@ -9,7 +9,8 @@
         <h1 class="display-3 fw-bold mb-3">
             <i class="bi bi-heart-pulse"></i> ACEest Fitness & Gym
         </h1>
-        <p class="lead mb-4">Track your fitness journey with precision and power!</p>
+        <p class="lead mb-2">Track your fitness journey with precision and power!</p>
+        <p class="mb-4"><span class="badge bg-light text-primary">Version 1.1 - Enhanced Session Tracking</span></p>
         <a href="{{ url_for('main.workouts') }}" class="btn btn-light btn-lg">
             <i class="bi bi-play-circle"></i> Start Your Workout
         </a>
@@ -130,6 +131,16 @@
                             <td><span class="badge bg-info">GET</span></td>
                             <td><code>/api/workouts/stats</code></td>
                             <td>Get workout statistics</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/workouts/sessions</code></td>
+                            <td>Get session summary</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/workouts/recent</code></td>
+                            <td>Get recent workouts</td>
                         </tr>
                         <tr>
                             <td><span class="badge bg-danger">DELETE</span></td>

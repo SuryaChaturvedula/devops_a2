@@ -10,7 +10,9 @@
             <h1 class="display-5 fw-bold">
                 <i class="bi bi-activity text-primary"></i> Workout Manager
             </h1>
-            <p class="text-muted">Track your fitness journey one workout at a time</p>
+            <p class="text-muted">Track your fitness journey one workout at a time 
+                <span class="badge bg-primary">V1.1</span>
+            </p>
         </div>
     </div>
 
@@ -157,6 +159,7 @@
                                                 <th>Exercise</th>
                                                 <th>Category</th>
                                                 <th>Duration</th>
+                                                <th>Session ID</th>
                                                 <th>Time</th>
                                             </tr>
                                         </thead>
@@ -173,6 +176,7 @@
                                                     </span>
                                                 </td>
                                                 <td>{{ workout.duration }} min</td>
+                                                <td><code>{{ workout.session_id }}</code></td>
                                                 <td class="text-muted small">{{ workout.timestamp|datetime }}</td>
                                             </tr>
                                             {% endfor %}
