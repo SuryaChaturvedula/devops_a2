@@ -1,0 +1,50 @@
+# Git files
+.git
+.gitignore
+.github
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.pytest_cache
+
+# Virtual environments
+venv
+env
+ENV
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test and coverage
+htmlcov
+.coverage
+coverage.xml
+.tox
+.nox
+
+# CI/CD
+.jenkins_home
+Jenkinsfile.embedded
+Dockerfile.jenkins
+
+# Documentation
+README.md
+*.md
+
+# Problem folder
+Problem/
+
+# Logs
+*.log
