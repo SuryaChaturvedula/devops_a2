@@ -4,7 +4,7 @@ Version: 1.3 - Full features with user profiles and health calculations
 Handles both Web UI and REST API endpoints
 """
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
-from app.models import workout_session, Workout
+from app.models import workout_session
 from app.profile import user_profile
 
 main_bp = Blueprint('main', __name__)

@@ -2,7 +2,7 @@
 Data models for ACEest Fitness & Gym application
 Version: 1.1 - Enhanced with session tracking and date management
 """
-from datetime import datetime, date
+from datetime import datetime
 from typing import List, Dict, Optional
 import uuid
 

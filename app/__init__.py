@@ -1,9 +1,9 @@
 """
 ACEest Fitness & Gym - Flask Application Factory
 """
-from flask import Flask
-from datetime import datetime
 import os
+from datetime import datetime
+from flask import Flask
 
 
 def create_app(config_name='development'):
@@ -28,7 +28,7 @@ def create_app(config_name='development'):
         if isinstance(value, str):
             try:
                 value = datetime.fromisoformat(value)
-            except:
+            except ValueError:
                 return value
         return value.strftime('%Y-%m-%d %H:%M')
     
