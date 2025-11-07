@@ -71,18 +71,25 @@ def add_workout_form():
     duration_str = request.form.get('duration', '').strip()
     category = request.form.get('category', 'Workout')
     
-    # Validation
+    # Validation with better error messages
     if not exercise:
-        flash('Exercise name is required!', 'error')
+        flash('⚠️ Exercise name is required!', 'error')
+        return redirect(url_for('main.workouts'))
+    
+    if len(exercise) < 2:
+        flash('⚠️ Exercise name must be at least 2 characters!', 'error')
         return redirect(url_for('main.workouts'))
     
     try:
         duration = int(duration_str)
         if duration <= 0:
-            flash('Duration must be a positive number!', 'error')
+            flash('⚠️ Duration must be a positive number!', 'error')
+            return redirect(url_for('main.workouts'))
+        if duration > 1440:  # 24 hours
+            flash('⚠️ Duration cannot exceed 24 hours (1440 minutes)!', 'error')
             return redirect(url_for('main.workouts'))
     except ValueError:
-        flash('Duration must be a valid number!', 'error')
+        flash('⚠️ Duration must be a valid number!', 'error')
         return redirect(url_for('main.workouts'))
     
     # Add workout
