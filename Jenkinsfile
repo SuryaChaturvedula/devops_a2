@@ -32,9 +32,8 @@ pipeline {
             steps {
                 echo '🐍 Setting up Python environment...'
                 sh '''
-                    python --version
-                    pip --version
-                    pip install --upgrade pip
+                    python3 --version
+                    pip3 --version
                 '''
             }
         }
@@ -43,8 +42,7 @@ pipeline {
             steps {
                 echo '📦 Installing Python dependencies...'
                 sh '''
-                    pip install -r requirements.txt
-                    pip list
+                    pip3 install --break-system-packages -r requirements.txt
                 '''
             }
         }
@@ -53,7 +51,7 @@ pipeline {
             steps {
                 echo '🔍 Running code linting...'
                 sh '''
-                    pip install flake8 pylint
+                    pip3 install --break-system-packages flake8 pylint
                     echo "Running flake8..."
                     flake8 app/ --max-line-length=120 --exclude=__pycache__,*.pyc --exit-zero || true
                     echo "Running pylint..."
@@ -132,16 +130,16 @@ pipeline {
         stage('Test Docker Image') {
             steps {
                 echo '🧪 Testing Docker image...'
-                sh '''
+                sh """
                     echo "Starting container for testing..."
-                    docker run -d --name test-container -p 5001:5000 ${DOCKER_IMAGE}:${GIT_TAG}
-                    sleep 5
+                    docker run -d --name test-container-\${BUILD_NUMBER} -p 5001:5000 ${DOCKER_IMAGE}:\${GIT_TAG}
+                    sleep 10
                     echo "Testing health endpoint..."
-                    curl -f http://localhost:5001/health || exit 1
+                    docker exec test-container-\${BUILD_NUMBER} python3 -c "import urllib.request; response = urllib.request.urlopen('http://localhost:5000/health'); assert response.status == 200; print('✅ Health check passed!')"
                     echo "Stopping test container..."
-                    docker stop test-container
-                    docker rm test-container
-                '''
+                    docker stop test-container-\${BUILD_NUMBER}
+                    docker rm test-container-\${BUILD_NUMBER}
+                """
             }
         }
         
@@ -203,25 +201,19 @@ pipeline {
     
     post {
         always {
-            echo '🧹 Cleaning up workspace...'
-            cleanWs()
+            echo '🧹 Cleaning up...'
+            sh '''
+                # Clean up any test containers
+                docker ps -aq -f name=test-container | xargs -r docker rm -f || true
+            '''
         }
         success {
             echo '✅ Pipeline completed successfully!'
-            // Send notification (optional)
-            // mail to: 'team@example.com',
-            //      subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            //      body: "The build completed successfully. Version: ${env.GIT_TAG}"
+            echo "Version ${env.GIT_TAG} built and tested successfully"
         }
         failure {
             echo '❌ Pipeline failed!'
-            // Send notification (optional)
-            // mail to: 'team@example.com',
-            //      subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            //      body: "The build failed. Please check the logs."
-        }
-        unstable {
-            echo '⚠️ Pipeline is unstable!'
+            echo "Build failed for version ${env.GIT_TAG}"
         }
     }
 }
