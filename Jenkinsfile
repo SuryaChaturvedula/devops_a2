@@ -84,35 +84,36 @@ pipeline {
             }
         }
         
-        stage('Code Quality Analysis') {
-            steps {
-                echo '📊 Running SonarQube analysis...'
-                script {
-                    // SonarQube Scanner
-                    withSonarQubeEnv("${SONARQUBE_ENV}") {
-                        sh '''
-                            sonar-scanner \
-                                -Dsonar.projectKey=aceest-fitness \
-                                -Dsonar.projectName="ACEest Fitness & Gym" \
-                                -Dsonar.projectVersion=${GIT_TAG} \
-                                -Dsonar.sources=app \
-                                -Dsonar.tests=tests \
-                                -Dsonar.python.coverage.reportPaths=coverage.xml \
-                                -Dsonar.python.version=3.11
-                        '''
-                    }
-                }
-            }
-        }
+        // TODO: Enable SonarQube after configuration
+        // stage('Code Quality Analysis') {
+        //     steps {
+        //         echo '📊 Running SonarQube analysis...'
+        //         script {
+        //             // SonarQube Scanner
+        //             withSonarQubeEnv("${SONARQUBE_ENV}") {
+        //                 sh '''
+        //                     sonar-scanner \
+        //                         -Dsonar.projectKey=aceest-fitness \
+        //                         -Dsonar.projectName="ACEest Fitness & Gym" \
+        //                         -Dsonar.projectVersion=${GIT_TAG} \
+        //                         -Dsonar.sources=app \
+        //                         -Dsonar.tests=tests \
+        //                         -Dsonar.python.coverage.reportPaths=coverage.xml \
+        //                         -Dsonar.python.version=3.11
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
         
-        stage('Quality Gate') {
-            steps {
-                echo '🚦 Checking SonarQube Quality Gate...'
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        // stage('Quality Gate') {
+        //     steps {
+        //         echo '🚦 Checking SonarQube Quality Gate...'
+        //         timeout(time: 5, unit: 'MINUTES') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
         
         stage('Build Docker Image') {
             steps {
@@ -160,43 +161,44 @@ pipeline {
             }
         }
         
-        stage('Deploy to Kubernetes') {
-            when {
-                branch 'main'
-            }
-            steps {
-                echo '☸️ Deploying to Kubernetes...'
-                sh '''
-                    kubectl set image deployment/aceest-fitness-deployment \
-                        aceest-fitness=${DOCKER_IMAGE}:${GIT_TAG} \
-                        --namespace=aceest-fitness
-                    kubectl rollout status deployment/aceest-fitness-deployment \
-                        --namespace=aceest-fitness
-                '''
-            }
-        }
+        // TODO: Enable after Kubernetes setup
+        // stage('Deploy to Kubernetes') {
+        //     when {
+        //         branch 'main'
+        //     }
+        //     steps {
+        //         echo '☸️ Deploying to Kubernetes...'
+        //         sh '''
+        //             kubectl set image deployment/aceest-fitness-deployment \
+        //                 aceest-fitness=${DOCKER_IMAGE}:${GIT_TAG} \
+        //                 --namespace=aceest-fitness
+        //             kubectl rollout status deployment/aceest-fitness-deployment \
+        //                 --namespace=aceest-fitness
+        //         '''
+        //     }
+        // }
         
-        stage('Post-Deployment Tests') {
-            when {
-                branch 'main'
-            }
-            steps {
-                echo '✅ Running post-deployment tests...'
-                sh '''
-                    # Get the service URL
-                    SERVICE_URL=$(kubectl get service aceest-fitness-service \
-                        -n aceest-fitness -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-                    
-                    # Test health endpoint
-                    curl -f http://${SERVICE_URL}:5000/health || exit 1
-                    
-                    # Test API endpoints
-                    curl -f http://${SERVICE_URL}:5000/api/workouts || exit 1
-                    
-                    echo "Post-deployment tests passed!"
-                '''
-            }
-        }
+        // stage('Post-Deployment Tests') {
+        //     when {
+        //         branch 'main'
+        //     }
+        //     steps {
+        //         echo '✅ Running post-deployment tests...'
+        //         sh '''
+        //             # Get the service URL
+        //             SERVICE_URL=$(kubectl get service aceest-fitness-service \
+        //                 -n aceest-fitness -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        //             
+        //             # Test health endpoint
+        //             curl -f http://${SERVICE_URL}:5000/health || exit 1
+        //             
+        //             # Test API endpoints
+        //             curl -f http://${SERVICE_URL}:5000/api/workouts || exit 1
+        //             
+        //             echo "Post-deployment tests passed!"
+        //         '''
+        //     }
+        // }
     }
     
     post {
