@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - ACEest Fitness & Gym{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Page Header -->
+        <div class="col-12 mb-4">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-bar-chart-line text-success"></i> Analytics & Charts
+            </h1>
+            <p class="text-muted">Visualize your workout progress 
+                <span class="badge bg-success">V1.2</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body">
+                    <h6 class="card-title text-uppercase">Total Sessions</h6>
+                    <h2 class="mb-0">{{ stats.total_sessions }}</h2>
+                    <small>Workout sessions completed</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-gradient" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="card-body">
+                    <h6 class="card-title text-uppercase">Total Exercises</h6>
+                    <h2 class="mb-0">{{ stats.total_workouts }}</h2>
+                    <small>Individual exercises logged</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-gradient" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="card-body">
+                    <h6 class="card-title text-uppercase">Avg Duration</h6>
+                    <h2 class="mb-0">
+                        {% if stats.total_workouts > 0 %}
+                            {{ "%.1f"|format(stats.total_duration / stats.total_workouts) }}
+                        {% else %}
+                            0
+                        {% endif %}
+                        <small>min</small>
+                    </h2>
+                    <small>Per exercise</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Workout Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Duration Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="durationChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Details -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-table"></i> Category Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Exercise Count</th>
+                                    <th>Total Duration</th>
+                                    <th>Average Duration</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in ['Warm-up', 'Workout', 'Cool-down'] %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-{% if category == 'Warm-up' %}info{% elif category == 'Workout' %}danger{% else %}primary{% endif %}">
+                                            {{ category }}
+                                        </span>
+                                    </td>
+                                    <td>{{ stats.by_category[category].count }}</td>
+                                    <td>{{ stats.by_category[category].duration }} min</td>
+                                    <td>
+                                        {% if stats.by_category[category].count > 0 %}
+                                            {{ "%.1f"|format(stats.by_category[category].duration / stats.by_category[category].count) }} min
+                                        {% else %}
+                                            0 min
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if stats.total_duration > 0 %}
+                                            <div class="progress">
+                                                <div class="progress-bar bg-{% if category == 'Warm-up' %}info{% elif category == 'Workout' %}danger{% else %}primary{% endif %}" 
+                                                     role="progressbar" 
+                                                     style="width: {{ (stats.by_category[category].duration / stats.total_duration * 100)|int }}%">
+                                                    {{ (stats.by_category[category].duration / stats.total_duration * 100)|int }}%
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Category Distribution Chart
+    const categoryData = {
+        labels: ['Warm-up', 'Workout', 'Cool-down'],
+        datasets: [{
+            data: [
+                {{ stats.by_category['Warm-up'].count }},
+                {{ stats.by_category['Workout'].count }},
+                {{ stats.by_category['Cool-down'].count }}
+            ],
+            backgroundColor: [
+                'rgba(13, 202, 240, 0.8)',
+                'rgba(220, 53, 69, 0.8)',
+                'rgba(13, 110, 253, 0.8)'
+            ],
+            borderColor: [
+                'rgba(13, 202, 240, 1)',
+                'rgba(220, 53, 69, 1)',
+                'rgba(13, 110, 253, 1)'
+            ],
+            borderWidth: 2
+        }]
+    };
+
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: categoryData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: 'Exercises by Category'
+                }
+            }
+        }
+    });
+
+    // Duration Chart
+    const durationData = {
+        labels: ['Warm-up', 'Workout', 'Cool-down'],
+        datasets: [{
+            label: 'Total Duration (minutes)',
+            data: [
+                {{ stats.by_category['Warm-up'].duration }},
+                {{ stats.by_category['Workout'].duration }},
+                {{ stats.by_category['Cool-down'].duration }}
+            ],
+            backgroundColor: [
+                'rgba(13, 202, 240, 0.6)',
+                'rgba(220, 53, 69, 0.6)',
+                'rgba(13, 110, 253, 0.6)'
+            ],
+            borderColor: [
+                'rgba(13, 202, 240, 1)',
+                'rgba(220, 53, 69, 1)',
+                'rgba(13, 110, 253, 1)'
+            ],
+            borderWidth: 2
+        }]
+    };
+
+    new Chart(document.getElementById('durationChart'), {
+        type: 'bar',
+        data: durationData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Total Duration by Category'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value + ' min';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

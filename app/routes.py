@@ -1,6 +1,6 @@
 """
 Routes for ACEest Fitness & Gym application
-Version: 1.1 - Enhanced with session tracking
+Version: 1.2 - Added charts and analytics
 Handles both Web UI and REST API endpoints
 """
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
@@ -41,6 +41,27 @@ def workouts():
                          grouped_workouts=grouped_workouts,
                          stats=stats,
                          categories=categories)
+
+
+@main_bp.route('/analytics')
+def analytics():
+    """Analytics and charts page"""
+    categories = ['Warm-up', 'Workout', 'Cool-down']
+    
+    stats = {
+        'total_workouts': workout_session.get_workout_count(),
+        'total_duration': workout_session.get_total_duration(),
+        'total_sessions': len(workout_session.get_session_summary()),
+        'by_category': {
+            category: {
+                'count': len(workout_session.get_workouts_by_category(category)),
+                'duration': workout_session.get_duration_by_category(category)
+            }
+            for category in categories
+        }
+    }
+    
+    return render_template('analytics.html', stats=stats)
 
 
 @main_bp.route('/add_workout', methods=['POST'])
