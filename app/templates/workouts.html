@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Workouts - ACEest Fitness & Gym{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Page Header -->
+        <div class="col-12 mb-4">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-activity text-primary"></i> Workout Manager
+            </h1>
+            <p class="text-muted">Track your fitness journey one workout at a time</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-primary text-white p-4 rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Total Workouts</h6>
+                        <h2 class="mb-0">{{ stats.total_workouts }}</h2>
+                    </div>
+                    <i class="bi bi-clipboard-check" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-success text-white p-4 rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Total Duration</h6>
+                        <h2 class="mb-0">{{ stats.total_duration }} <small>min</small></h2>
+                    </div>
+                    <i class="bi bi-clock-history" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-info text-white p-4 rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Warm-up</h6>
+                        <h2 class="mb-0">{{ stats.warmup_duration }} <small>min</small></h2>
+                    </div>
+                    <i class="bi bi-sunrise" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-warning text-white p-4 rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Cool-down</h6>
+                        <h2 class="mb-0">{{ stats.cooldown_duration }} <small>min</small></h2>
+                    </div>
+                    <i class="bi bi-moon-stars" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Add Workout Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Add New Workout</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.add_workout_form') }}" id="workoutForm">
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category" required>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}" {% if cat == 'Workout' %}selected{% endif %}>{{ cat }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="exercise" class="form-label">Exercise Name</label>
+                            <input type="text" class="form-control" id="exercise" name="exercise" 
+                                   placeholder="e.g., Push-ups, Running, Stretching" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="duration" class="form-label">Duration (minutes)</label>
+                            <input type="number" class="form-control" id="duration" name="duration" 
+                                   placeholder="e.g., 30" min="1" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-lg"></i> Add Workout
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card shadow-sm mt-3">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Quick Stats</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Workout Duration:</span>
+                            <strong>{{ stats.workout_duration }} min</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Average/Workout:</span>
+                            <strong>
+                                {% if stats.total_workouts > 0 %}
+                                    {{ "%.1f"|format(stats.total_duration / stats.total_workouts) }} min
+                                {% else %}
+                                    0 min
+                                {% endif %}
+                            </strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Lists -->
+        <div class="col-lg-8">
+            {% if workouts %}
+                <!-- Tabbed Workout Lists -->
+                <ul class="nav nav-tabs mb-3" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#all-tab" type="button">
+                            <i class="bi bi-list-ul"></i> All Workouts
+                        </button>
+                    </li>
+                    {% for category in categories %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#{{ category|lower }}-tab" type="button">
+                            {{ category }}
+                        </button>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="tab-content">
+                    <!-- All Workouts Tab -->
+                    <div class="tab-pane fade show active" id="all-tab">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Exercise</th>
+                                                <th>Category</th>
+                                                <th>Duration</th>
+                                                <th>Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for workout in workouts %}
+                                            <tr>
+                                                <td>{{ loop.index }}</td>
+                                                <td>
+                                                    <strong>{{ workout.exercise }}</strong>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-{% if workout.category == 'Warm-up' %}info{% elif workout.category == 'Workout' %}danger{% else %}primary{% endif %}">
+                                                        {{ workout.category }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ workout.duration }} min</td>
+                                                <td class="text-muted small">{{ workout.timestamp|datetime }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category-specific Tabs -->
+                    {% for category in categories %}
+                    <div class="tab-pane fade" id="{{ category|lower }}-tab">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                {% if grouped_workouts[category] %}
+                                <div class="list-group">
+                                    {% for workout in grouped_workouts[category] %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ workout.exercise }}</h6>
+                                            <small class="text-muted">{{ workout.timestamp|datetime }}</small>
+                                        </div>
+                                        <p class="mb-1">
+                                            <span class="badge bg-success">{{ workout.duration }} minutes</span>
+                                        </p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                    <p class="mt-3">No {{ category }} workouts yet</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <!-- Empty State -->
+                <div class="card shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-clipboard-x text-muted" style="font-size: 5rem;"></i>
+                        <h4 class="mt-4">No Workouts Yet</h4>
+                        <p class="text-muted">Start logging your workouts using the form on the left!</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
