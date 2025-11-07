@@ -64,7 +64,7 @@ pipeline {
             steps {
                 echo '🧪 Running unit tests with Pytest...'
                 sh '''
-                    pytest -v --cov=app --cov-report=xml --cov-report=html --cov-report=term
+                    pytest -v --cov=app --cov-report=xml --cov-report=html --cov-report=term --junitxml=test-results.xml
                 '''
             }
             post {
