@@ -1,4 +1,5 @@
-/* ACEest Fitness & Gym - Custom Styles */
+/* ACEest Fitness & Gym - Custom Styles
+   Version: 1.2.1 - UI Improvements */
 
 :root {
     --primary-color: #0d6efd;
@@ -6,6 +7,7 @@
     --info-color: #0dcaf0;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
+    --transition-speed: 0.3s;
 }
 
 body {
@@ -21,8 +23,9 @@ body {
 
 /* Feature Cards */
 .feature-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
     border: none;
+    cursor: pointer;
 }
 
 .feature-card:hover {
