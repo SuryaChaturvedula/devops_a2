@@ -1,14 +1,19 @@
 // ACEest Fitness & Gym - Main JavaScript
+// Version: 1.2.2 - Enhanced error handling
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('ACEest Fitness & Gym - Ready!');
+    console.log('ACEest Fitness & Gym - Ready! Version 1.2.2');
     
     // Auto-dismiss alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         setTimeout(() => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
+            try {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            } catch (e) {
+                console.warn('Alert already closed');
+            }
         }, 5000);
     });
     
