@@ -5,7 +5,7 @@ pipeline {
         // Python environment
         PYTHON_VERSION = '3.11'
         // Docker configuration
-        DOCKER_IMAGE = 'aceest-fitness'
+        DOCKER_IMAGE = 'suryachaturvedula/aceest-fitness'
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
         // SonarQube configuration
