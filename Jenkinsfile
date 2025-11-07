@@ -64,13 +64,14 @@ pipeline {
             steps {
                 echo '🧪 Running unit tests with Pytest...'
                 sh '''
-                    pytest -v --cov=app --cov-report=xml --cov-report=html --cov-report=term --junitxml=test-results.xml
+                    pytest -v --cov=app --cov-report=xml --cov-report=html --cov-report=term
                 '''
             }
             post {
                 always {
-                    // Publish test results
-                    junit(allowEmptyResults: true, testResults: '**/test-results.xml')
+                    // Publish test results - DISABLED (too slow with file search)
+                    // junit(allowEmptyResults: true, testResults: 'test-results.xml')
+                    
                     // Publish coverage report
                     publishHTML(target: [
                         allowMissing: false,
