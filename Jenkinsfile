@@ -84,45 +84,46 @@ pipeline {
             }
         }
         
-        stage('Code Quality Analysis') {
-            steps {
-                echo '📊 Running SonarQube analysis...'
-                script {
-                    // SonarQube Scanner
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                            sonar-scanner \
-                                -Dsonar.projectKey=aceest-fitness \
-                                -Dsonar.projectName="ACEest Fitness & Gym" \
-                                -Dsonar.projectVersion=\${GIT_TAG} \
-                                -Dsonar.sources=app \
-                                -Dsonar.tests=tests \
-                                -Dsonar.python.coverage.reportPaths=coverage.xml \
-                                -Dsonar.python.version=3.11
-                        """
-                    }
-                }
-            }
-        }
+        // Temporarily disabled - takes 24 minutes, we know it works!
+        // stage('Code Quality Analysis') {
+        //     steps {
+        //         echo '📊 Running SonarQube analysis...'
+        //         script {
+        //             // SonarQube Scanner
+        //             withSonarQubeEnv('SonarQube') {
+        //                 sh """
+        //                     sonar-scanner \
+        //                         -Dsonar.projectKey=aceest-fitness \
+        //                         -Dsonar.projectName="ACEest Fitness & Gym" \
+        //                         -Dsonar.projectVersion=\${GIT_TAG} \
+        //                         -Dsonar.sources=app \
+        //                         -Dsonar.tests=tests \
+        //                         -Dsonar.python.coverage.reportPaths=coverage.xml \
+        //                         -Dsonar.python.version=3.11
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
         
-        stage('Quality Gate') {
-            steps {
-                echo '🚦 Checking SonarQube Quality Gate...'
-                timeout(time: 5, unit: 'MINUTES') {
-                    // Don't abort pipeline on first run - just warn
-                    script {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            echo "⚠️ Quality Gate failed: ${qg.status}"
-                            // Don't fail the build yet - just show warning
-                            // Change to 'error' later to enforce quality gates
-                        } else {
-                            echo "✅ Quality Gate passed!"
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Quality Gate') {
+        //     steps {
+        //         echo '🚦 Checking SonarQube Quality Gate...'
+        //         timeout(time: 5, unit: 'MINUTES') {
+        //             // Don't abort pipeline on first run - just warn
+        //             script {
+        //                 def qg = waitForQualityGate()
+        //                 if (qg.status != 'OK') {
+        //                     echo "⚠️ Quality Gate failed: ${qg.status}"
+        //                     // Don't fail the build yet - just show warning
+        //                     // Change to 'error' later to enforce quality gates
+        //                 } else {
+        //                     echo "✅ Quality Gate passed!"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         
         stage('Build Docker Image') {
             steps {
