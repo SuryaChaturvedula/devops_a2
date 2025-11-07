@@ -17,7 +17,7 @@ pipeline {
                 checkout scm
                 script {
                     // Get version from git tag or commit
-                    env.GIT_TAG = bat(returnStdout: true, script: '@git describe --tags --always').trim()
+                    env.GIT_TAG = sh(returnStdout: true, script: 'git describe --tags --always').trim()
                     echo "Building version: ${env.GIT_TAG}"
                 }
             }
@@ -26,10 +26,10 @@ pipeline {
         stage('Setup Python Environment') {
             steps {
                 echo '🐍 Setting up Python environment...'
-                bat '''
-                    python --version
-                    pip --version
-                    pip install --upgrade pip
+                sh '''
+                    python3 --version || python --version
+                    pip3 --version || pip --version
+                    pip3 install --upgrade pip || pip install --upgrade pip
                 '''
             }
         }
@@ -37,8 +37,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing Python dependencies...'
-                bat '''
-                    pip install -r requirements.txt
+                sh '''
+                    pip3 install -r requirements.txt || pip install -r requirements.txt
                 '''
             }
         }
@@ -46,10 +46,10 @@ pipeline {
         stage('Lint Code') {
             steps {
                 echo '🔍 Running code linting...'
-                bat '''
-                    pip install flake8 pylint
-                    echo Running flake8...
-                    flake8 app/ --max-line-length=120 --exclude=__pycache__,*.pyc --exit-zero || exit 0
+                sh '''
+                    pip3 install flake8 pylint || pip install flake8 pylint
+                    echo "Running flake8..."
+                    flake8 app/ --max-line-length=120 --exclude=__pycache__,*.pyc --exit-zero || true
                 '''
             }
         }
@@ -57,7 +57,7 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 echo '🧪 Running unit tests with Pytest...'
-                bat '''
+                sh '''
                     pytest -v --cov=app --cov-report=xml --cov-report=html --cov-report=term
                 '''
             }
@@ -81,7 +81,7 @@ pipeline {
                 echo '🐳 Building Docker image...'
                 script {
                     // Build Docker image with version tag
-                    bat """
+                    sh """
                         docker build -t ${DOCKER_IMAGE}:${GIT_TAG} .
                         docker tag ${DOCKER_IMAGE}:${GIT_TAG} ${DOCKER_IMAGE}:latest
                     """
@@ -92,10 +92,10 @@ pipeline {
         stage('Test Docker Image') {
             steps {
                 echo '🧪 Testing Docker image...'
-                bat """
-                    echo Starting container for testing...
+                sh """
+                    echo "Starting container for testing..."
                     docker run -d --name test-container-${BUILD_NUMBER} -p 5001:5000 ${DOCKER_IMAGE}:${GIT_TAG}
-                    timeout /t 5 /nobreak
+                    sleep 5
                     curl -f http://localhost:5001/health || exit 1
                     docker stop test-container-${BUILD_NUMBER}
                     docker rm test-container-${BUILD_NUMBER}
@@ -108,8 +108,8 @@ pipeline {
         always {
             echo '🧹 Cleaning up...'
             // Clean up any leftover test containers
-            bat '''
-                for /f "tokens=*" %%i in ('docker ps -aq -f "name=test-container"') do docker rm -f %%i || exit 0
+            sh '''
+                docker ps -aq -f "name=test-container" | xargs -r docker rm -f || true
             '''
         }
         success {
