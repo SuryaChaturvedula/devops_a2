@@ -13,6 +13,7 @@ A modern Flask web application for tracking fitness and gym workouts with a comp
 ## Version 1.0
 
 **Current Features:**
+
 - Basic workout logging
 - Category-based organization
 - Statistics dashboard
@@ -29,17 +30,18 @@ A modern Flask web application for tracking fitness and gym workouts with a comp
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd Solution
    ```
-
 2. **Create virtual environment**
+
    ```bash
    python -m venv venv
    ```
-
 3. **Activate virtual environment**
+
    - Windows:
      ```bash
      venv\Scripts\activate
@@ -48,18 +50,18 @@ A modern Flask web application for tracking fitness and gym workouts with a comp
      ```bash
      source venv/bin/activate
      ```
-
 4. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
-
 5. **Run the application**
+
    ```bash
    python app.py
    ```
-
 6. **Open your browser**
+
    ```
    http://localhost:5000
    ```
@@ -68,17 +70,18 @@ A modern Flask web application for tracking fitness and gym workouts with a comp
 
 ### Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/health` | Health check |
-| `GET` | `/api/workouts` | Get all workouts |
-| `POST` | `/api/workouts` | Add new workout |
-| `GET` | `/api/workouts/stats` | Get statistics |
+| Method     | Endpoint                | Description        |
+| ---------- | ----------------------- | ------------------ |
+| `GET`    | `/health`             | Health check       |
+| `GET`    | `/api/workouts`       | Get all workouts   |
+| `POST`   | `/api/workouts`       | Add new workout    |
+| `GET`    | `/api/workouts/stats` | Get statistics     |
 | `DELETE` | `/api/workouts/clear` | Clear all workouts |
 
 ### Example API Usage
 
 **Add a workout:**
+
 ```bash
 curl -X POST http://localhost:5000/api/workouts \
   -H "Content-Type: application/json" \
@@ -86,11 +89,13 @@ curl -X POST http://localhost:5000/api/workouts \
 ```
 
 **Get all workouts:**
+
 ```bash
 curl http://localhost:5000/api/workouts
 ```
 
 **Get statistics:**
+
 ```bash
 curl http://localhost:5000/api/workouts/stats
 ```
@@ -98,11 +103,13 @@ curl http://localhost:5000/api/workouts/stats
 ## Testing
 
 Run the test suite:
+
 ```bash
 pytest
 ```
 
 Run with coverage:
+
 ```bash
 pytest --cov=app --cov-report=html
 ```
@@ -135,11 +142,13 @@ Solution/
 ## Docker
 
 Build the image:
+
 ```bash
 docker build -t aceest-fitness:v1.0 .
 ```
 
 Run the container:
+
 ```bash
 docker run -p 5000:5000 aceest-fitness:v1.0
 ```
@@ -147,6 +156,7 @@ docker run -p 5000:5000 aceest-fitness:v1.0
 ## CI/CD Pipeline
 
 This project includes a complete CI/CD pipeline with:
+
 - Jenkins for continuous integration
 - Pytest for automated testing
 - SonarQube for code quality
@@ -165,11 +175,13 @@ python app.py
 ### Code Quality
 
 Format code with Black:
+
 ```bash
 black app/
 ```
 
 Lint with Flake8:
+
 ```bash
 flake8 app/
 ```
@@ -177,6 +189,7 @@ flake8 app/
 ## Deployment Strategies
 
 The application supports multiple Kubernetes deployment strategies:
+
 - Blue-Green Deployment
 - Canary Release
 - Rolling Update
@@ -187,17 +200,5 @@ The application supports multiple Kubernetes deployment strategies:
 
 Educational project for DevOps CI/CD assignment.
 
-## Author
-
-DevOps Assignment - ACEest Fitness & Gym
-
-## Links
-
-- GitHub Repository: [Link]
-- Docker Hub: [Link]
-- Live Demo: [Link]
-
----
-
-**Version**: 1.0  
+**Version**: 1.0
 **Last Updated**: November 2025
