@@ -1,0 +1,48 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aceest-fitness-ab-ingress
+  namespace: aceest-fitness
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: "X-Version"
+    nginx.ingress.kubernetes.io/canary-by-header-value: "B"
+    nginx.ingress.kubernetes.io/canary-by-cookie: "version"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: aceest-fitness.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: aceest-fitness-ab-version-a
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aceest-fitness-ab-ingress-b
+  namespace: aceest-fitness
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: "X-Version"
+    nginx.ingress.kubernetes.io/canary-by-header-value: "B"
+    nginx.ingress.kubernetes.io/canary-by-cookie: "version"
+    nginx.ingress.kubernetes.io/canary-weight: "50"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: aceest-fitness.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: aceest-fitness-ab-version-b
+            port:
+              number: 80
