@@ -176,9 +176,6 @@ pipeline {
         }
         
         stage('Deploy to Kubernetes') {
-            when {
-                branch 'main'
-            }
             steps {
                 echo 'Kubernetes Deployment Stage'
                 echo '=============================='
@@ -206,9 +203,6 @@ pipeline {
         }
         
         stage('Post-Deployment Tests') {
-            when {
-                branch 'main'
-            }
             steps {
                 echo 'Post-Deployment Verification'
                 echo '============================='
