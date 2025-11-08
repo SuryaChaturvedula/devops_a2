@@ -219,6 +219,8 @@ pipeline {
                 echo 'To test manually:'
                 echo '  minikube service aceest-fitness-rolling -n aceest-fitness'
                 echo '  curl http://$(minikube ip):30130/health'
+            }
+        }
     }
     
     post {
