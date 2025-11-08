@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aceest-fitness-rolling
+  namespace: aceest-fitness
+  labels:
+    app: aceest-fitness
+    strategy: rolling-update
+spec:
+  replicas: 6
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1    # Maximum 1 pod unavailable during update (conservative)
+      maxSurge: 2          # Can create 2 extra pods during update (faster rollout)
+  selector:
+    matchLabels:
+      app: aceest-fitness
+      deployment: rolling
+  template:
+    metadata:
+      labels:
+        app: aceest-fitness
+        deployment: rolling
+        version: v1.0
+    spec:
+      containers:
+      - name: aceest-fitness
+        image: suryachaturvedula/aceest-fitness:latest
+        ports:
+        - containerPort: 5000
+          name: http
+        env:
+        - name: DEPLOYMENT_STRATEGY
+          value: "ROLLING UPDATE"
+        - name: DEPLOYMENT_VERSION
+          value: "v1.0"
+        - name: VERSION_INFO
+          value: "[ROLLING] Gradual Update"
+        - name: FLASK_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 2
+          successThreshold: 1
+      terminationGracePeriodSeconds: 30

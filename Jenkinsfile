@@ -175,44 +175,48 @@ pipeline {
             }
         }
         
-        // TODO: Enable after Kubernetes setup
-        // stage('Deploy to Kubernetes') {
-        //     when {
-        //         branch 'main'
-        //     }
-        //     steps {
-        //         echo 'Deploying to Kubernetes...'
-        //         sh '''
-        //             kubectl set image deployment/aceest-fitness-deployment \
-        //                 aceest-fitness=${DOCKER_IMAGE}:${GIT_TAG} \
-        //                 --namespace=aceest-fitness
-        //             kubectl rollout status deployment/aceest-fitness-deployment \
-        //                 --namespace=aceest-fitness
-        //         '''
-        //     }
-        // }
+        stage('Deploy to Kubernetes') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Deploying to Kubernetes using Rolling Update...'
+                sh '''
+                    kubectl set image deployment/aceest-fitness-rolling \
+                        aceest-fitness=${DOCKER_IMAGE}:${GIT_TAG} \
+                        --namespace=aceest-fitness \
+                        --record
+                    kubectl rollout status deployment/aceest-fitness-rolling \
+                        --namespace=aceest-fitness \
+                        --timeout=5m
+                '''
+            }
+        }
         
-        // stage('Post-Deployment Tests') {
-        //     when {
-        //         branch 'main'
-        //     }
-        //     steps {
-        //         echo 'Running post-deployment tests...'
-        //         sh '''
-        //             # Get the service URL
-        //             SERVICE_URL=$(kubectl get service aceest-fitness-service \
-        //                 -n aceest-fitness -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-        //             
-        //             # Test health endpoint
-        //             curl -f http://${SERVICE_URL}:5000/health || exit 1
-        //             
-        //             # Test API endpoints
-        //             curl -f http://${SERVICE_URL}:5000/api/workouts || exit 1
-        //             
-        //             echo "Post-deployment tests passed!"
-        //         '''
-        //     }
-        // }
+        stage('Post-Deployment Tests') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Running post-deployment tests...'
+                sh '''
+                    # Get Minikube IP and service NodePort
+                    MINIKUBE_IP=$(minikube ip)
+                    NODE_PORT=30130
+                    SERVICE_URL="http://${MINIKUBE_IP}:${NODE_PORT}"
+                    
+                    echo "Testing service at: ${SERVICE_URL}"
+                    
+                    # Test health endpoint
+                    curl -f ${SERVICE_URL}/health || exit 1
+                    
+                    # Test API endpoints
+                    curl -f ${SERVICE_URL}/api/workouts || exit 1
+                    
+                    echo "Post-deployment tests passed!"
+                '''
+            }
+        }
     }
     
     post {
