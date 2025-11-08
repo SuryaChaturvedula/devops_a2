@@ -159,10 +159,16 @@ pipeline {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
                 script {
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
+                    withCredentials([usernamePassword(
+                        credentialsId: "${DOCKER_CREDENTIALS_ID}",
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
                         sh """
+                            echo "\${DOCKER_PASS}" | docker login ${DOCKER_REGISTRY} -u "\${DOCKER_USER}" --password-stdin
                             docker push ${DOCKER_IMAGE}:${GIT_TAG}
                             docker push ${DOCKER_IMAGE}:latest
+                            docker logout ${DOCKER_REGISTRY}
                         """
                     }
                 }
